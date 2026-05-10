@@ -12,6 +12,13 @@ from ..formatters import handle_api_error
 from ..http_client import ckan_request
 
 
+def _sql_escape(value: str) -> str:
+    # PostgreSQL string literals: double the single quote and escape backslashes.
+    # Dates do not flow through here because they are regex-validated at the
+    # Pydantic layer (^\d{4}-\d{2}-\d{2}$) and therefore cannot contain quotes.
+    return value.replace("\\", "\\\\").replace("'", "''")
+
+
 def _strb_where_clause(
     query: str | None = None,
     departement: str | None = None,
@@ -21,9 +28,9 @@ def _strb_where_clause(
     """Erstellt die WHERE-Klausel für STRB-SQL-Queries."""
     conditions: list[str] = []
     if query:
-        conditions.append(f"\"Titel\" ILIKE '%{query}%'")
+        conditions.append(f"\"Titel\" ILIKE '%{_sql_escape(query)}%'")
     if departement:
-        conditions.append(f"\"Federfuhrendes Departement\" ILIKE '%{departement}%'")
+        conditions.append(f"\"Federfuhrendes Departement\" ILIKE '%{_sql_escape(departement)}%'")
     if datum_von:
         conditions.append(f"\"Beschlussdatum\" >= '{datum_von}'")
     if datum_bis:

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- Fixed SQL-injection in `tools/strb.py` (audit finding H-1). The `query` and
+  `departement` parameters of `search_stadtratsbeschluesse` and
+  `get_beschluesse_by_departement` were f-string-interpolated into the
+  `WHERE` clause sent to CKAN's `datastore_search_sql`. Quote-closing payloads
+  (`x%' OR 1=1 OR '%`) bypassed the title filter. Now escaped via a small
+  PostgreSQL string-literal escape (`'` → `''`, `\` → `\\`); date inputs are
+  already regex-validated upstream by Pydantic and do not need escaping.
+  Regression tests added in `tests/test_server.py`.
+
 ### Changed
 - Refactored monolithic `server.py` (2654 lines) into a domain-organized package:
   `app.py` (FastMCP instance), `config.py`, `http_client.py`, `formatters.py`,

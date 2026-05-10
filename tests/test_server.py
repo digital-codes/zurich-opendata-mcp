@@ -242,3 +242,76 @@ def test_mcp_server_exposes_tools():
 
     assert mcp is not None
     assert mcp.name
+
+
+# ─── STRB SQL injection regression (no live API) ─────────────────────────────
+
+
+def test_sql_escape_doubles_single_quotes():
+    from zurich_opendata_mcp.tools.strb import _sql_escape
+
+    assert _sql_escape("foo") == "foo"
+    assert _sql_escape("o'brien") == "o''brien"
+    assert _sql_escape("' OR 1=1 --") == "'' OR 1=1 --"
+    assert _sql_escape("a\\b") == "a\\\\b"
+    assert _sql_escape("a\\'b") == "a\\\\''b"
+
+
+def test_strb_where_clause_neutralises_quote_injection():
+    """The classic 'close-the-string' payload must end up inside the literal,
+    not break out of it. The doubled quote ('') is a single literal apostrophe
+    in PostgreSQL, so the whole payload is searched verbatim and returns zero
+    rows — instead of the bare ' breaking out of the ILIKE pattern and
+    appending a tautology."""
+    from zurich_opendata_mcp.tools.strb import _strb_where_clause
+
+    payload = "x%' OR 1=1 OR '%"
+    where = _strb_where_clause(query=payload)
+
+    # Exactly one ILIKE comparison — no extra clauses leaked into the WHERE.
+    assert where.count(" ILIKE ") == 1
+    assert " AND " not in where
+    # Every single quote from the payload is doubled.
+    assert where == "\"Titel\" ILIKE '%x%'' OR 1=1 OR ''%%'"
+
+
+def test_strb_where_clause_neutralises_departement_injection():
+    from zurich_opendata_mcp.tools.strb import _strb_where_clause
+
+    where = _strb_where_clause(departement="SSD' UNION SELECT 1,2,3 --")
+    # No second predicate appended.
+    assert where.count(" ILIKE ") == 1
+    assert " AND " not in where
+    # Payload sits inside the literal with the quote doubled.
+    assert where == (
+        "\"Federfuhrendes Departement\" ILIKE "
+        "'%SSD'' UNION SELECT 1,2,3 --%'"
+    )
+
+
+def test_strb_where_clause_dates_pass_through_unescaped():
+    """Dates are regex-validated upstream (Pydantic ^\\d{4}-\\d{2}-\\d{2}$) so
+    they cannot contain quotes; the WHERE clause uses them verbatim."""
+    from zurich_opendata_mcp.tools.strb import _strb_where_clause
+
+    where = _strb_where_clause(datum_von="2025-01-01", datum_bis="2025-12-31")
+    assert where == (
+        "\"Beschlussdatum\" >= '2025-01-01' AND "
+        "\"Beschlussdatum\" <= '2025-12-31'"
+    )
+
+
+def test_strb_where_clause_combines_conditions_with_and():
+    from zurich_opendata_mcp.tools.strb import _strb_where_clause
+
+    where = _strb_where_clause(query="Volksschule", departement="SSD", datum_von="2025-02-01")
+    assert where.count(" AND ") == 2
+    assert "Volksschule" in where
+    assert "SSD" in where
+    assert "2025-02-01" in where
+
+
+def test_strb_where_clause_empty_returns_true():
+    from zurich_opendata_mcp.tools.strb import _strb_where_clause
+
+    assert _strb_where_clause() == "TRUE"
