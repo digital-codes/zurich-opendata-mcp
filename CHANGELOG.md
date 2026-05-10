@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Refactored monolithic `server.py` (2654 lines) into a domain-organized package:
+  `app.py` (FastMCP instance), `config.py`, `http_client.py`, `formatters.py`,
+  `clients/{wfs,paris,tourism,sparql}.py`,
+  `tools/{catalog,datastore,realtime,geo,parliament,tourism,sparql,strb,resources}.py`.
+  No behavior change — `server.py` re-exports public symbols for backward compatibility.
+
 ## [0.2.0] - 2026-03-22
 
 ### Added
