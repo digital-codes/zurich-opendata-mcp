@@ -253,6 +253,7 @@ zurich-opendata-mcp/
 ├── pyproject.toml
 ├── README.md / README.de.md
 ├── CONTRIBUTING.md / .de.md
+├── SECURITY.md / .de.md
 ├── CHANGELOG.md
 ├── CLAUDE.md                # Projekt-Konventionen für Claude
 ├── LICENSE
@@ -286,13 +287,24 @@ ruff check src/ tests/
 
 ---
 
+## 🤝 Mitwirken
+
+Beiträge sind willkommen — siehe [CONTRIBUTING.de.md](CONTRIBUTING.de.md) ([English](CONTRIBUTING.md)).
+
+## 🔒 Sicherheit
+
+Nur lesend, keine Personendaten, keine Authentifizierung, eine feste Menge von
+Public-Data-Endpunkten. Den vollständigen Sicherheitsstatus und die akzeptierten
+Restrisiken finden Sie in [SECURITY.de.md](SECURITY.de.md) ([English](SECURITY.md)).
+
 ## 📜 Lizenz
 
-MIT License
+MIT License — siehe [LICENSE](LICENSE). Alle genutzten Daten stehen unter offenen
+Lizenzen (CC0 / Open by Default seit 2021).
 
-## 🤝 Kontext
+## 👤 Autorin
 
-Alle genutzten Daten stehen unter offenen Lizenzen (CC0 / Open by Default seit 2021).
+Hayal Oezkan · [malkreide](https://github.com/malkreide)
 
 ---
 
