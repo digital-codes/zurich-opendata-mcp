@@ -50,6 +50,7 @@ dev = [
 zurich-opendata-mcp = "zurich_opendata_mcp.server:main"
 
 [project.urls]
+"mcp-name" = "io.github.malkreide/zurich-opendata-mcp"
 Homepage   = "https://github.com/malkreide/zurich-opendata-mcp"
 Repository = "https://github.com/malkreide/zurich-opendata-mcp"
 Issues     = "https://github.com/malkreide/zurich-opendata-mcp/issues"
