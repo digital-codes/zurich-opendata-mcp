@@ -311,3 +311,22 @@ Hayal Oezkan · [malkreide](https://github.com/malkreide)
 *Powered by [Model Context Protocol](https://modelcontextprotocol.io/) • 6 APIs • 24 Tools • 5 Resources*
 
 <!-- mcp-name: io.github.malkreide/zurich-opendata-mcp -->
+
+<!-- BEGIN GENERATED: install -->
+## Installation
+
+Run via [`uv`](https://docs.astral.sh/uv/)'s `uvx` — no clone or manual install needed. Add to your MCP client config (`mcpServers` for Claude Desktop, Cursor and Windsurf; use a top-level `servers` key for VS Code in `.vscode/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "zurich-opendata-mcp": {
+      "command": "uvx",
+      "args": [
+        "zurich-opendata-mcp"
+      ]
+    }
+  }
+}
+```
+<!-- END GENERATED: install -->
